@@ -173,10 +173,11 @@ class Deck {
 var currentCard = 0;
 var playersCards = [];
 var dealerCards = [];
-
+var hasBusted = false;
 
 function hit() {
-    addPlayerCard();
+    if (!hasBusted)
+        addPlayerCard();
 }
 
 function delayOneSecond() {
@@ -282,20 +283,21 @@ function addPlayerCard() {
 
     playersCards.push(card);
 
-
     // update sum
-    updateSum(playersCards, "playerSumText");
+    var sums = updateSum(playersCards, "playerSumText");
+
+    // if busted, update variable
+    if (sums[0] == "bust") {
+        hasBusted = true;
+        setTimeout(stand, 1000);
+    }
+
 
     // increment used card
     currentCard++;
 }
 
 var deck = new Deck();
-
-
-
-console.log(deck.cards)
-
 
 // initial cards
 addDealerCard(false, false);
