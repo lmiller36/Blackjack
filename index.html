@@ -5,9 +5,32 @@
     <title>Lorne's Blackjack Odds</title>
 </head>
 
+<style>
+    .centerContent {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .text {
+        font-size:140%;
+    }
+</style>
+
 <body>
-    <script type="text/javascript" src = "main.js">
+    <div><p class=" centerContent text">Dealer</p></div>
+    <div id="dealerContainer" class="centerContent">
+    </div>
+    <br /> <br />
+    <div id="playerContainer" class="centerContent"></div>
+    <div id="sumContainer">
+        <p class="centerContent text" id="sumText">Sum: 10</p>
+    </div>
+    
+    <script type="text/javascript" src="main.js">
     </script>
 </body>
+
+
 
 </html>
