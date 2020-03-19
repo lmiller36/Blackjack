@@ -22,16 +22,11 @@ document.values = {
     "king": "10"
 }
 
-// i.e. 2 > 2 or 11 > Jack ... etc
-// getValueFromFaceValue(faceValue){
-//     switch()
-// }
-
 // A card has two attributes, 
 // a face value [1,13], where 1 = Ace, 11 = J, 12 = Q, 13 = l
 // and a suit
 class Card {
-    constructor(suit, faceValue, value) {
+    constructor(suit, faceValue) {
         this.suit = suit;
         this.faceValue = faceValue;
         this.value = document.values[faceValue];
@@ -43,37 +38,6 @@ class Card {
         return img;
     }
 }
-
-// function getValue(faceValue) {
-//     switch (faceValue) {
-//         case values["2"]:
-//             return 2;
-//         case values["3"]:
-//             return 3;
-//         case values["4"]:
-//             return 4;
-//         case values["5"]:
-//             return 5;
-//         case values["6"]:
-//             return 6;
-//         case values["7"]:
-//             return 7;
-//         case values["8"]:
-//             return 8;
-//         case values["9"]:
-//             return 9;
-//         case values["10"]:
-//             return 10;
-//         case values["jack"]:
-//             return 10;
-//         case values["queen"]:
-//             return 10;
-//         case values["king"]:
-//             return 10;
-//         case values["ace"]:
-//             return "?";
-//     }
-// }
 
 function shuffle(arra1) {
     var ctr = arra1.length, temp, index;
@@ -136,11 +100,8 @@ function addCards(cards) {
         if (sum <= 21) set.add(sum);
     })
 
-    var final = Array.from(set).sort();
-
-    // console.log(sums);
-    // console.log(set);
-    // console.log(final);
+    var final = Array.from(set);
+    final.sort((a,b)=> {return b-a});
 
     // didn't bust
     if (final.length > 0)
@@ -162,7 +123,7 @@ class Deck {
         for (var i = 0; i < suits.length; i++) {
             var suit = suits[i];
             for (var j = 0; j < values.length; j++) {
-                this.cards.push(new Card(suit, values[j], null))
+                this.cards.push(new Card(suit, values[j]))
             }
         }
 
@@ -174,6 +135,7 @@ var currentCard = 0;
 var playersCards = [];
 var dealerCards = [];
 var hasBusted = false;
+var deck;
 
 function hit() {
     if (!hasBusted)
@@ -200,6 +162,7 @@ function stand() {
 
     // finish out dealer cards
     var maxSum = sums[0];
+    console.log(maxSum);
     var bust = (maxSum == "bust");
     var mustStop = maxSum >= 17;
 
@@ -220,8 +183,7 @@ function stand() {
 
         if (bust || mustStop) clearInterval(addCardInterval);
     }
-
-
+    
     // start autoplay for dealer, playing one card / sec
     // only initiate if dealer starts below 17
     if (!bust && !mustStop)
@@ -240,10 +202,6 @@ function updateSum(cards, div) {
     sumText.innerText = str;
 
     return sums;
-}
-
-function dealerCards() {
-
 }
 
 function addDealerCard(showCard, updateSums) {
@@ -297,12 +255,13 @@ function addPlayerCard() {
     currentCard++;
 }
 
-var deck = new Deck();
+function start(){
+     deck = new Deck();
 
-// initial cards
-addDealerCard(false, false);
-addPlayerCard();
-addDealerCard(true, false);
-addPlayerCard();
+    // initial cards
+    addDealerCard(false, false);
+    addPlayerCard();
+    addDealerCard(true, false);
+    addPlayerCard();
 
-
+}

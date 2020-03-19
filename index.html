@@ -12,18 +12,22 @@
         justify-content: center;
     }
 
+    .actionButton{
+        width: 100px;
+    }
+
     .text {
         font-size: 140%;
     }
 </style>
 
-<body>
+<body onload="start()">
     <div style="display: none;">
         <p class=" centerContent text">Dealer</p>
     </div>
     <div id="actionContainer" style="right:0; top:50; position: absolute;">
-        <div> <button onclick="hit()">hit</button></div>
-        <div> <button onclick="stand()">stand</button></div>
+        <div> <button class="actionButton" onclick="hit()">hit</button></div>
+        <div> <button class="actionButton" onclick="stand()">stand</button></div>
     </div>
     <div id="dealerContainer" class="centerContent">
     </div>
@@ -38,6 +42,8 @@
 
     <script type="text/javascript" src="main.js">
     </script>
+      <script type="text/javascript" src="autoplayGame.js">
+      </script>
 </body>
 
 
