@@ -13,20 +13,29 @@
     }
 
     .text {
-        font-size:140%;
+        font-size: 140%;
     }
 </style>
 
 <body>
-    <div><p class=" centerContent text">Dealer</p></div>
+    <div style="display: none;">
+        <p class=" centerContent text">Dealer</p>
+    </div>
+    <div id="actionContainer" style="right:0; top:50; position: absolute;">
+        <div> <button onclick="hit()">hit</button></div>
+        <div> <button onclick="stand()">stand</button></div>
+    </div>
     <div id="dealerContainer" class="centerContent">
     </div>
-    <br /> <br />
-    <div id="playerContainer" class="centerContent"></div>
-    <div id="sumContainer">
-        <p class="centerContent text" id="sumText">Sum: 10</p>
+    <div id="dealerSumContainer" style="display: none;">
+        <p class="centerContent text" id="dealerSumText">Sum: 0</p>
     </div>
-    
+    <br />
+    <div id="playerContainer" class="centerContent"></div>
+    <div id="playerSumContainer">
+        <p class="centerContent text" id="playerSumText">Sum: 0</p>
+    </div>
+
     <script type="text/javascript" src="main.js">
     </script>
 </body>

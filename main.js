@@ -114,9 +114,9 @@ function addCards(cards) {
         else {
             v1 = parseInt(value);
             v2 = v1;
-            console.log(v1 + " " + v2);
+            // console.log(v1 + " " + v2);
         }
-        console.log(v1 + " " + v2);
+        // console.log(v1 + " " + v2);
 
 
         for (var i = 0; i < numSums; i++) {
@@ -136,11 +136,11 @@ function addCards(cards) {
         if (sum <= 21) set.add(sum);
     })
 
-    var final = Array.from(set);
+    var final = Array.from(set).sort();
 
-    console.log(sums);
-    console.log(set);
-    console.log(final);
+    // console.log(sums);
+    // console.log(set);
+    // console.log(final);
 
     // didn't bust
     if (final.length > 0)
@@ -170,37 +170,137 @@ class Deck {
     }
 }
 
+var currentCard = 0;
+var playersCards = [];
+var dealerCards = [];
+
+
+function hit() {
+    addPlayerCard();
+}
+
+function delayOneSecond() {
+    setTimeout(function () { }, 1000);
+}
+
+function stand() {
+    // flip over hidden card
+    var hidden = document.getElementById("hiddenCard");
+    hidden.style.display = "none";
+    var dealersCards = document.getElementById("dealerContainer")
+    var firstCard = deck.cards[0];
+    dealersCards.insertBefore(firstCard.getSVG(), dealersCards.firstChild);
+
+    // show dealer sum
+    var dealerSumDiv = document.getElementById("dealerSumContainer");
+    dealerSumDiv.style.display = "";
+
+    var sums = updateSum(dealerCards, "dealerSumText")
+
+    // finish out dealer cards
+    var maxSum = sums[0];
+    var bust = (maxSum == "bust");
+    var mustStop = maxSum >= 17;
+
+    delayOneSecond();
+
+    // dealer will continue playing until they bust
+    // or reach a value of 17
+
+    var addCardInterval;
+    var addCard = () => {
+        sums = addDealerCard(true, true);
+        maxSum = sums[0];
+        console.log(maxSum)
+        if (maxSum == "bust") bust = true;
+        else {
+            if (maxSum >= 17) mustStop = true;
+        }
+
+        if (bust || mustStop) clearInterval(addCardInterval);
+    }
+
+
+    // start autoplay for dealer, playing one card / sec
+    // only initiate if dealer starts below 17
+    if (!bust && !mustStop)
+        addCardInterval = setInterval(addCard, 1000);
+}
+
+function updateSum(cards, div) {
+    var sums = addCards(cards);
+    console.log(sums);
+    var str = "Sum: " + sums[0];
+    var sumText = document.getElementById(div);
+
+    for (var i = 1; i < sums.length; i++)
+        str += " or " + sums[i];
+
+    sumText.innerText = str;
+
+    return sums;
+}
+
+function dealerCards() {
+
+}
+
+function addDealerCard(showCard, updateSums) {
+    var img, card;
+    var dealersCards = document.getElementById("dealerContainer")
+
+    card = deck.cards[currentCard];
+    if (!showCard) {
+        img = document.createElement('img');
+        img.src = "./svg-cards/Card_back.svg";
+        img.width = "222";
+        img.id = "hiddenCard";
+    }
+    else {
+        img = card.getSVG();
+    }
+
+    dealersCards.appendChild(img);
+    dealerCards.push(card);
+
+    var sums;
+    if (updateSums)
+        sums = updateSum(dealerCards, "dealerSumText")
+
+
+    currentCard++;
+
+    return sums;
+}
+
+function addPlayerCard() {
+    var playersCardsDiv = document.getElementById("playerContainer")
+
+    // add card to window
+    var card = deck.cards[currentCard];
+    playersCardsDiv.appendChild(card.getSVG());
+
+    playersCards.push(card);
+
+
+    // update sum
+    updateSum(playersCards, "playerSumText");
+
+    // increment used card
+    currentCard++;
+}
+
 var deck = new Deck();
 
-var img = document.createElement('img');
-img.src = "./svg-cards/Card_back.svg";
-img.width = "222";
+
 
 console.log(deck.cards)
 
-// add dealer's card
-var dealersCards = document.getElementById("dealerContainer")
-dealersCards.appendChild(img);
-dealersCards.appendChild(deck.cards[2].getSVG());
 
-
-// add player's cards
-var playersCards = document.getElementById("playerContainer")
-var card1 = deck.cards[1];
-var card2 = deck.cards[3];
-
-playersCards.appendChild(card1.getSVG());
-playersCards.appendChild(card2.getSVG());
-
-// update sum
-var sums = addCards([card1, card2]);
-console.log(sums);
-var str = "Sum: " + sums[0];
-var sumText = document.getElementById("sumText");
-
-for (var i = 1; i < sums.length; i++)
-    str += " or " + sums[i];
-
-sumText.innerText = str;
+// initial cards
+addDealerCard(false, false);
+addPlayerCard();
+addDealerCard(true, false);
+addPlayerCard();
 
 
