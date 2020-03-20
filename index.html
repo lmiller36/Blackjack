@@ -12,38 +12,93 @@
         justify-content: center;
     }
 
-    .actionButton{
-        width: 100px;
+    .actionButton {
+        width: 150px;
+        font-size: xx-large
     }
 
     .text {
         font-size: 140%;
     }
+
+    .currentHand {
+        border: 5px;
+        border-style: dotted;
+        padding: 10px;
+    }
+
+    .win {
+        border: 5px;
+        border-style: dotted;
+        padding: 10px;
+        border-color: darkgreen;
+    }
+
+    .loss {
+        border: 5px;
+        border-style: dotted;
+        padding: 10px;
+        border-color: red;
+    }
+
+    .card {}
+
+    .label {
+        display: inline-block;
+        width: 150px; 
+    }
 </style>
 
-<body onload="start()">
+<body onload="">
     <div style="display: none;">
         <p class=" centerContent text">Dealer</p>
     </div>
-    <div id="actionContainer" style="right:0; top:50; position: absolute;">
-        <div> <button class="actionButton" onclick="hit()">hit</button></div>
-        <div> <button class="actionButton" onclick="stand()">stand</button></div>
+    <div class="gameButtons" id="actionContainer_inGame" style="right:0; top:50; position: absolute;">
+        <div> <button class="actionButton hit" onclick="hit()">hit</button></div>
+        <br/>
+        <div> <button class="actionButton stand" onclick="stand()">stand</button></div>
+        <br/>
+        <div> <button class="actionButton double" onclick="double()">double</button></div>
+        <br/>
+        <div> <button class="actionButton split" onclick="split()" style="display: none;">split</button></div>
+        <!-- <div> <button class="actionButton" onclick="newGame()" style="display: none;">replay</button></div> -->
     </div>
+    <div id="actionContainer_replay" style="right:0; top:50; position: absolute; display: none;">
+        <div> <button class="actionButton" onclick="newGame()">replay</button></div>
+    </div>
+
+    <div id="moneyContainer" style="left:0; top:50; position: absolute;">
+        <p id="chips" class="text">Chips: 100</p>
+        <br />
+        <p id="bet" class="text">Total Bet: 1</p>
+        <div id="betButtons">
+            <div>
+                <button onclick="changeBet(1)">+</button>
+                <button onclick="changeBet(-1)">-</button>
+            </div>
+            <br />
+            <button onclick="newGame()">Confirm</button>
+        </div>
+    </div>
+
     <div id="dealerContainer" class="centerContent">
     </div>
     <div id="dealerSumContainer" style="display: none;">
         <p class="centerContent text" id="dealerSumText">Sum: 0</p>
     </div>
     <br />
-    <div id="playerContainer" class="centerContent"></div>
+    <!-- <div id="playerContainer" class="centerContent"></div>
     <div id="playerSumContainer">
         <p class="centerContent text" id="playerSumText">Sum: 0</p>
-    </div>
+        <p class="centerContent text" id="">Bet: 0</p>
+    </div> -->
+    <div id="playerHandsContainer">
 
+    </div>
     <script type="text/javascript" src="main.js">
     </script>
-      <script type="text/javascript" src="autoplayGame.js">
-      </script>
+    <script type="text/javascript" src="autoplayGame.js">
+    </script>
 </body>
 
 
