@@ -129,10 +129,10 @@ class Deck {
 
         this.cards = shuffle(this.cards);
 
-        // this.cards.splice(0, 1, new Card("clubs", "10"));
-        // this.cards.splice(2, 1, new Card("clubs", "ace"));
-        // // this.cards.splice(4, 1, new Card("clubs", "ace"));
-        // this.cards.splice(5, 1, new Card("clubs", "ace"));
+        // this.cards.splice(1, 1, new Card("clubs", "ace"));
+        // this.cards.splice(3, 1, new Card("clubs", "ace"));
+        // this.cards.splice(4, 1, new Card("clubs", "9"));
+        // this.cards.splice(5, 1, new Card("clubs", "10"));
         // this.cards.splice(7, 1, new Card("clubs", "ace"));
         // this.cards.splice(8, 1, new Card("clubs", "ace"));
 
@@ -199,8 +199,6 @@ function newGame() {
     addPlayerCard("hand_0");
 
     // if dealer has 21, game is automatically over
-    console.log(dealerCards[1].faceValue);
-    console.log(dealerCards[0].value);
     if(dealerCards[1].faceValue == "ace" && dealerCards[0].value == 10){
         hideButtons();
         setTimeout(stand, 1000);
@@ -250,8 +248,7 @@ function hideButtons(){
 function hit() {
     if (hasBusted || gameOver) return;
 
-    hideButtons();
-
+    // hideButtons();
     addPlayerCard("hand_" + currHand);
 }
 
@@ -403,6 +400,7 @@ function stand() {
     //if (hasBusted || gameOver) return;
 
     currHand++;
+     
 
     document.getElementById("actionContainer_inGame")
         .querySelector(".double")
@@ -421,9 +419,21 @@ function stand() {
             var buttons = document.querySelector('#actionContainer_inGame');
             buttons.querySelector('.split').style.display = "none";
         }
+
+        var sums = addCards(playersCards[currHand]);
+
+        if (sums[0] == "bust" || sums[0] == 21) {
+            console.log("timeout")
+            hideButtons();
+            setTimeout(stand, 1000);
+        }
+        else{
+            toggleButtons(true);
+        }
     }
     // if round is over
     else if (currHand == playersCards.length) {
+        hideButtons();
         document.getElementById("actionContainer_inGame").style.display = "none";
         document.getElementById("hand_" + (currHand - 1)).querySelector(".cards").classList.remove("currentHand");
 
@@ -545,8 +555,9 @@ function addPlayerCard(handStr) {
     sum = sums[0];
 
     // if busted, update variable
-    if (sums[0] == "bust" || sums[0] == 21) {
+    if (sums[0] == "bust" || sums[0] == 21 && handNum == currHand) {
         console.log("timeout")
+        hideButtons();
         setTimeout(stand, 1000);
     }
 

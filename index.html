@@ -18,7 +18,7 @@
     }
 
     .text {
-        font-size: 140%;
+        font-size: xx-large;
     }
 
     .currentHand {
@@ -45,7 +45,7 @@
 
     .label {
         display: inline-block;
-        width: 150px; 
+        width: 150px;
     }
 </style>
 
@@ -53,18 +53,20 @@
     <div style="display: none;">
         <p class=" centerContent text">Dealer</p>
     </div>
-    <div class="gameButtons" id="actionContainer_inGame" style="right:0; top:50; position: absolute;">
-        <div> <button class="actionButton hit" onclick="hit()">hit</button></div>
-        <br/>
-        <div> <button class="actionButton stand" onclick="stand()">stand</button></div>
-        <br/>
-        <div> <button class="actionButton double" onclick="double()">double</button></div>
-        <br/>
-        <div> <button class="actionButton split" onclick="split()" style="display: none;">split</button></div>
-        <!-- <div> <button class="actionButton" onclick="newGame()" style="display: none;">replay</button></div> -->
-    </div>
-    <div id="actionContainer_replay" style="right:0; top:50; position: absolute; display: none;">
-        <div> <button class="actionButton" onclick="newGame()">replay</button></div>
+    <div>
+        <div class="gameButtons" id="actionContainer_inGame" style="right:0; top:50; position: absolute;">
+            <div> <button class="actionButton hit" onclick="hit()">hit</button></div>
+            <br />
+            <div> <button class="actionButton stand" onclick="stand()">stand</button></div>
+            <br />
+            <div> <button class="actionButton double" onclick="double()">double</button></div>
+            <br />
+            <div> <button class="actionButton split" onclick="split()" style="display: none;">split</button></div>
+            <!-- <div> <button class="actionButton" onclick="newGame()" style="display: none;">replay</button></div> -->
+        </div>
+        <div id="actionContainer_replay" style="right:0; top:50; position: absolute; display: none;">
+            <div> <button class="actionButton" onclick="newGame()">replay</button></div>
+        </div>
     </div>
 
     <div id="moneyContainer" style="left:0; top:50; position: absolute;">
@@ -73,11 +75,11 @@
         <p id="bet" class="text">Total Bet: 1</p>
         <div id="betButtons">
             <div>
-                <button onclick="changeBet(1)">+</button>
-                <button onclick="changeBet(-1)">-</button>
+                <button class="text" style="min-width: 50px;" onclick="changeBet(1)">+</button>
+                <button class="text" style="min-width: 50px;" onclick="changeBet(-1)">-</button>
             </div>
             <br />
-            <button onclick="newGame()">Confirm</button>
+            <button class="text" onclick="newGame()">Confirm</button>
         </div>
     </div>
 
