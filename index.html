@@ -3,6 +3,8 @@
 
 <head>
     <title>Lorne's Blackjack Odds</title>
+    <meta name="viewport" content="width=device-width, user-scalable=no">
+
 </head>
 
 <style>
@@ -19,6 +21,14 @@
 
     .text {
         font-size: xx-large;
+        -webkit-user-select: none;
+        /* Safari */
+        -moz-user-select: none;
+        /* Firefox */
+        -ms-user-select: none;
+        /* IE10+/Edge */
+        user-select: none;
+        /* Standard */
     }
 
     .currentHand {
@@ -41,35 +51,58 @@
         border-color: red;
     }
 
-    .card {}
+    .dealerCards {
+        z-index: 99;
+        background-color: white;
+        border: 1px;
+        border-style: solid;
+        border-color: black;
+        padding: 1px;
+    }
 
     .label {
         display: inline-block;
         width: 150px;
     }
+
+    .topLayer {
+        z-index: 99;
+        /* position: relative; */
+    }
+
+    .backgroundImage {
+        background-image: url('https://upload.wikimedia.org/wikipedia/commons/thumb/4/4b/Blackjack_board.JPG/1600px-Blackjack_board.JPG');
+        opacity: .2;
+        width: 100%;
+        height: 1000px;
+        position: absolute;
+        object-fit: fill;
+        left: 0;
+        top: 0;
+    }
+
 </style>
 
+
 <body onload="">
+    <div class="backgroundImage">
+    </div>
     <div style="display: none;">
         <p class=" centerContent text">Dealer</p>
     </div>
-    <div>
-        <div class="gameButtons" id="actionContainer_inGame" style="right:0; top:50; position: absolute;">
-            <div> <button class="actionButton hit" onclick="hit()">hit</button></div>
-            <br />
-            <div> <button class="actionButton stand" onclick="stand()">stand</button></div>
-            <br />
-            <div> <button class="actionButton double" onclick="double()">double</button></div>
-            <br />
-            <div> <button class="actionButton split" onclick="split()" style="display: none;">split</button></div>
-            <!-- <div> <button class="actionButton" onclick="newGame()" style="display: none;">replay</button></div> -->
-        </div>
-        <div id="actionContainer_replay" style="right:0; top:50; position: absolute; display: none;">
-            <div> <button class="actionButton" onclick="newGame()">replay</button></div>
-        </div>
+    <div class="gameButtons" id="actionContainer_inGame" style="right:0; top:50; position: absolute; display: none;">
+        <div> <button class="actionButton hit" onclick="hit()">hit</button></div>
+        <br />
+        <div> <button class="actionButton stand" onclick="stand()">stand</button></div>
+        <br />
+        <div> <button class="actionButton double" onclick="double()">double</button></div>
+        <br />
+        <div> <button class="actionButton split" onclick="split()" style="display: none;">split</button></div>
     </div>
-
-    <div id="moneyContainer" style="left:0; top:50; position: absolute;">
+    <div id="actionContainer_replay" style="right:0; top:50; position: absolute; ">
+        <div> <button class="actionButton" onclick="newGame()">replay</button></div>
+    </div>
+    <div id="moneyContainer" style="left:0; top:50; position: absolute;  z-index: 99; font-size: x-large;">
         <p id="chips" class="text">Chips: 100</p>
         <br />
         <p id="bet" class="text">Total Bet: 1</p>
@@ -83,19 +116,15 @@
         </div>
     </div>
 
-    <div id="dealerContainer" class="centerContent">
+    <div id="dealerContainer" class="centerContent topLayer" style="margin: 0 auto;">
+        <div id="dealerContainer_cards" class="dealerCards" style="">
+        </div>
     </div>
     <div id="dealerSumContainer" style="display: none;">
         <p class="centerContent text" id="dealerSumText">Sum: 0</p>
     </div>
     <br />
-    <!-- <div id="playerContainer" class="centerContent"></div>
-    <div id="playerSumContainer">
-        <p class="centerContent text" id="playerSumText">Sum: 0</p>
-        <p class="centerContent text" id="">Bet: 0</p>
-    </div> -->
-    <div id="playerHandsContainer">
-
+    <div id="playerHandsContainer" style="margin: 0 auto;">
     </div>
     <script type="text/javascript" src="main.js">
     </script>

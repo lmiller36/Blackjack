@@ -178,7 +178,7 @@ function newGame() {
     deck = new Deck();
 
     // remove previous game's cards
-    removeChildren("dealerContainer");
+    removeChildren("dealerContainer_cards");
     removeChildren("playerHandsContainer");
 
     document.getElementById("dealerSumContainer").style.display = "none";
@@ -199,7 +199,7 @@ function newGame() {
     addPlayerCard("hand_0");
 
     // if dealer has 21, game is automatically over
-    if(dealerCards[1].faceValue == "ace" && dealerCards[0].value == 10){
+    if (dealerCards[1].faceValue == "ace" && dealerCards[0].value == 10) {
         hideButtons();
         setTimeout(stand, 1000);
     }
@@ -240,12 +240,13 @@ function double() {
     stand();
 }
 
-function hideButtons(){
+function hideButtons() {
     document.getElementById("actionContainer_inGame")
-    .style.display = "none";
+        .style.display = "none";
 }
 
 function hit() {
+    console.log('here');
     if (hasBusted || gameOver) return;
 
     // hideButtons();
@@ -316,6 +317,9 @@ function addPlayerHand() {
 
     var cardsDiv = document.createElement("div");
     cardsDiv.className = "cards";
+    cardsDiv.style.backgroundColor = "white";
+    cardsDiv.style.zIndex = "99";
+    cardsDiv.style.margin = "0 auto";
 
     // <ul>
     //     <li>
@@ -400,7 +404,7 @@ function stand() {
     //if (hasBusted || gameOver) return;
 
     currHand++;
-     
+
 
     document.getElementById("actionContainer_inGame")
         .querySelector(".double")
@@ -427,7 +431,7 @@ function stand() {
             hideButtons();
             setTimeout(stand, 1000);
         }
-        else{
+        else {
             toggleButtons(true);
         }
     }
@@ -440,7 +444,10 @@ function stand() {
         // flip over hidden card
         var hidden = document.getElementById("hiddenCard");
         hidden.style.display = "none";
-        var dealersCards = document.getElementById("dealerContainer")
+        var dealersCards = document.getElementById("dealerContainer_cards");
+        dealersCards.className += "cards";
+        dealersCards.style.backgroundColor = "white";
+        dealersCards.style.zIndex = "99";
         var firstCard = deck.cards[0];
         dealersCards.insertBefore(firstCard.getSVG(), dealersCards.firstChild);
 
@@ -504,8 +511,8 @@ function updateSum(cards, sumText, bet) {
 
 function addDealerCard(showCard, updateSums) {
     var img, card;
-    var dealersCards = document.getElementById("dealerContainer")
-
+    var dealersCards = document.getElementById("dealerContainer_cards")
+    
     card = deck.cards[currentCard];
     if (!showCard) {
         img = document.createElement('img');
@@ -516,7 +523,7 @@ function addDealerCard(showCard, updateSums) {
     else {
         img = card.getSVG();
     }
-
+    
     dealersCards.appendChild(img);
     dealerCards.push(card);
 
