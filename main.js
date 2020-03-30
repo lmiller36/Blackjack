@@ -1,3 +1,24 @@
+var isMobile = {
+    Android: function () {
+        return navigator.userAgent.match(/Android/i);
+    },
+    BlackBerry: function () {
+        return navigator.userAgent.match(/BlackBerry/i);
+    },
+    iOS: function () {
+        return navigator.userAgent.match(/iPhone|iPad|iPod/i);
+    },
+    Opera: function () {
+        return navigator.userAgent.match(/Opera Mini/i);
+    },
+    Windows: function () {
+        return navigator.userAgent.match(/IEMobile/i) || navigator.userAgent.match(/WPDesktop/i);
+    },
+    any: function () {
+        return (isMobile.Android() || isMobile.BlackBerry() || isMobile.iOS() || isMobile.Opera() || isMobile.Windows());
+    }
+};
+
 
 document.suits = {
     clubs: 'clubs',
@@ -22,24 +43,6 @@ document.values = {
     "king": "10"
 }
 
-// A card has two attributes, 
-// a face value [1,13], where 1 = Ace, 11 = J, 12 = Q, 13 = l
-// and a suit
-class Card {
-    constructor(suit, faceValue) {
-        this.suit = suit;
-        this.faceValue = faceValue;
-        this.value = document.values[faceValue];
-    }
-
-    getSVG() {
-        var img = document.createElement('img');
-        img.src = "./svg-cards/" + this.faceValue + "_of_" + this.suit + ".svg";
-        img.width = "125";
-        return img;
-    }
-}
-
 function shuffle(arra1) {
     var ctr = arra1.length, temp, index;
 
@@ -57,60 +60,30 @@ function shuffle(arra1) {
     return arra1;
 }
 
-function addCards(cards) {
-    var sums = [];
-    var numSums = 1;
+function show(elem) {
+    elem.style.display = "";
+}
 
-    sums.push(0);
+function hide(elem) {
+    elem.style.display = "none";
+}
 
-    cards.forEach((card) => {
-        var value = card.value;
-        var v1, v2;
-        //     // ace
-        if (value == "?") {
-            for (var i = 0; i < numSums; i++) {
-                sums.push(sums[i]);
-            }
-            numSums *= 2;
-            v2 = 11;
-            v1 = 1;
-            // v2 = 11;                                                                                                                                                                                                                                                                                                                                                                           )
+function intersection(setA, setB) {
+    let _intersection = new Set()
+    for (let elem of setB) {
+        if (setA.has(elem)) {
+            _intersection.add(elem)
         }
-        else {
-            v1 = parseInt(value);
-            v2 = v1;
-            // console.log(v1 + " " + v2);
-        }
-        // console.log(v1 + " " + v2);
+    }
+    return _intersection
+}
 
-
-        for (var i = 0; i < numSums; i++) {
-            if (i < numSums / 2)
-                sums[i] += v1;
-            else
-                sums[i] += v2;
-        }
-    });
-
-
-    // set of remaining values 
-    var set = new Set();
-
-    // remove over 21
-    sums.forEach(sum => {
-        if (sum <= 21) set.add(sum);
-    })
-
-    var final = Array.from(set);
-    final.sort((a, b) => { return b - a });
-
-    // didn't bust
-    if (final.length > 0)
-        return final;
-
-    // busted
-    else return ["bust"];
-
+function difference(setA, setB) {
+    let _difference = new Set(setA)
+    for (let elem of setB) {
+        _difference.delete(elem)
+    }
+    return _difference
 }
 
 // returns a shuffled array of cards 
@@ -129,96 +102,12 @@ class Deck {
 
         this.cards = shuffle(this.cards);
 
-        // this.cards.splice(1, 1, new Card("clubs", "ace"));
-        // this.cards.splice(3, 1, new Card("clubs", "ace"));
-        // this.cards.splice(4, 1, new Card("clubs", "9"));
-        // this.cards.splice(5, 1, new Card("clubs", "10"));
-        // this.cards.splice(7, 1, new Card("clubs", "ace"));
-        // this.cards.splice(8, 1, new Card("clubs", "ace"));
-
-
+        // this.cards.splice(1, 1, new Card("spades", "ace"))
+        // this.cards.splice(3, 1, new Card("clubs", "10"))
+        // this.cards.splice(4, 1, new Card("hearts", "ace"))
+        // this.cards.splice(5, 1, new Card("hearts", "ace"))
+        // this.cards.splice(6, 1, new Card("hearts", "ace"))
     }
-}
-
-var currentCard = 0;
-var playersCards = [];
-var dealerCards = [];
-var currentBets = [];
-var hasBusted = false;
-var gameOver = false;
-var doubled = false;
-var deck;
-var sum = -1;
-var numHands = 0;
-var dealerSum = -1;
-document.chips = 100;
-document.bet = 1;
-var currHand = 0;
-
-function changeBet(betChange) {
-    var newBet = document.bet + betChange;
-    if (newBet > 0 && newBet <= document.chips)
-        document.bet = newBet;
-    document.getElementById("bet").innerText = "Bet: " + document.bet;
-}
-
-function newGame() {
-    currentCard = 0;
-    playersCards = [[]];
-    dealerCards = [];
-    currentBets = [document.bet];
-    hasBusted = false;
-    gameOver = false;
-    doubled = false;
-    currHand = 0;
-    numHands = 0;
-    sum = -1;
-    dealerSum = -1;
-
-    deck = new Deck();
-
-    // remove previous game's cards
-    removeChildren("dealerContainer_cards");
-    removeChildren("playerHandsContainer");
-
-    document.getElementById("dealerSumContainer").style.display = "none";
-    document.getElementById("dealerSumContainer").style.display = "none";
-
-    document.getElementById("actionContainer_inGame")
-        .querySelector(".double").style.display = "";
-
-    toggleButtons(true);
-
-    // initialize player hand
-    addPlayerHand();
-
-    // initial cards
-    addDealerCard(false, false);
-    addPlayerCard("hand_0");
-    addDealerCard(true, false);
-    addPlayerCard("hand_0");
-
-    // if dealer has 21, game is automatically over
-    if (dealerCards[1].faceValue == "ace" && dealerCards[0].value == 10) {
-        hideButtons();
-        setTimeout(stand, 1000);
-    }
-
-    document.getElementById("hand_0").querySelector(".cards").className += " currentHand";
-
-    if (playersCards[0].length == 2 && playersCards[0][0].value == playersCards[0][1].value) {
-        var buttons = document.querySelector('#actionContainer_inGame');
-        buttons.querySelector('.split').style.display = "";
-    }
-    else {
-        var buttons = document.querySelector('#actionContainer_inGame');
-        buttons.querySelector('.split').style.display = "none";
-    }
-
-    // if dealer has 21 w/ an ace showing, round is automatically over
-    // if()
-
-    // initializeML();
 }
 
 function removeChildren(nodeStr) {
@@ -227,347 +116,537 @@ function removeChildren(nodeStr) {
     node.parentNode.replaceChild(cNode, node);
 }
 
-function double() {
-    if (hasBusted || gameOver) return
-    doubled = true;
-    currentBets[currHand] *= 2;
-    // document.bet *= 2;
-    document.getElementById("hand_" + currHand).querySelector(".textDiv")
-        .querySelector(".bet").querySelector(".betText").innerText = "Bet: " + currentBets[currHand];
-    // document.getElementById("bet").innerText = "Bet: " + document.bet;
-
-    hit();
-    stand();
-}
-
-function hideButtons() {
-    document.getElementById("actionContainer_inGame")
-        .style.display = "none";
-}
-
-function hit() {
-    console.log('here');
-    if (hasBusted || gameOver) return;
-
-    // hideButtons();
-    addPlayerCard("hand_" + currHand);
+function removeChildrenWithNode(node) {
+    var cNode = node.cloneNode(false);
+    node.parentNode.replaceChild(cNode, node);
 }
 
 function delayOneSecond() {
     setTimeout(function () { }, 1000);
 }
 
-function toggleButtons(inGame) {
-
-    if (inGame) {
-        document.getElementById("actionContainer_replay").style.display = "none";
-        document.getElementById("actionContainer_inGame").style.display = "";
-        document.getElementById("betButtons").style.display = "none";
-
+// A card has two attributes, 
+// a face value [1,13], where 1 = Ace, 11 = J, 12 = Q, 13 = l
+// and a suit
+class Card {
+    constructor(suit, faceValue, isHidden) {
+        this.suit = suit;
+        this.faceValue = faceValue;
+        this.value = document.values[faceValue];
+        this.isHidden = isHidden;
     }
-    else {
-        document.getElementById("actionContainer_replay").style.display = "";
-        document.getElementById("actionContainer_inGame").style.display = "none";
-        document.getElementById("betButtons").style.display = "";
+
+    getSVG() {
+        var img = document.createElement('img');
+
+        // dealer card showing 
+        if (this.isHidden) {
+            img.src = "./svg-cards/Card_back.svg";
+            img.id = "hiddenCard";
+        }
+        else {
+            img.src = "./svg-cards/" + this.faceValue + "_of_" + this.suit + ".svg";
+        }
+
+        img.className = "card "+document.height;
+        return img;
     }
 }
 
-function endGame() {
-    toggleButtons(false);
+class Hand {
+    constructor() {
+        this.cards = [];
+        this.isBusted = false;
+        this.sum = 0;
+        this.showSum = false;
+    }
 
-    // determine bets
-    var i = 0;
-    playersCards.forEach(hand => {
-        var sum = addCards(hand)[0];
-        var cards = document.getElementById("hand_" + i).querySelector(".cards");
+    takeCard(card) {
+        this.cards.push(card);
 
-        // subtract if lost
-        if (sum == -1 || sum < dealerSum) {
-            document.chips -= currentBets[i];
-            cards.className += " loss";
-        }
-        else if (sum > dealerSum) {
-            if (sum == 21 && hand.length == 2) {
-                var bjBet = Math.round(currentBets[i] * 1.5);
-                document.getElementById("hand_" + (currHand - 1)).querySelector(".textDiv")
-                    .querySelector(".bet").querySelector(".betText").innerText = "Bet: " + bjBet;
-                document.chips += bjBet;
+        var sum = this.calculateCardSum();
+        this.sum = sum[0];
+        this.sumText = sum[0];
+        if (sum.length > 1)
+            this.sumText += " or " + sum[1];
+    }
+
+    calculateCardSum() {
+        var sums = [];
+        var numSums = 1;
+
+        sums.push(0);
+
+        this.cards.forEach((card) => {
+            var value = card.value;
+            var v1, v2;
+            // ace
+            if (value == "?") {
+                for (var i = 0; i < numSums; i++) {
+                    sums.push(sums[i]);
+                }
+                numSums *= 2;
+                v2 = 11;
+                v1 = 1;
             }
-            else
-                document.chips += currentBets[i];
+            else {
+                v1 = parseInt(value);
+                v2 = v1;
+            }
 
-            cards.className += " win";
+
+            for (var i = 0; i < numSums; i++) {
+                if (i < numSums / 2)
+                    sums[i] += v1;
+                else
+                    sums[i] += v2;
+            }
+        });
+
+
+        // set of remaining values 
+        var set = new Set();
+
+        // remove over 21
+        sums.forEach(sum => {
+            if (sum <= 21) set.add(sum);
+        })
+
+        var final = Array.from(set);
+        final.sort((a, b) => { return b - a });
+
+        // didn't bust
+        if (final.length > 0)
+            return final;
+
+        // busted
+        else return ["bust"];
+
+    }
+
+    createElement() {
+        var maxCardsInRow = 4;
+        var rowsNeeded = Math.ceil(this.cards.length / maxCardsInRow);
+        var div = document.createElement("div");
+
+        for (var i = 0; i < rowsNeeded; i++) {
+            var row = document.createElement("tr");
+            for (var j = 0; j < maxCardsInRow; j++) {
+                var cardNum = i * maxCardsInRow + j;
+                if (cardNum < this.cards.length) {
+                    var card = this.cards[cardNum];
+                    row.appendChild(card.getSVG());
+                }
+            }
+            div.appendChild(row);
+
+            if (this.showSum && i == (rowsNeeded - 1)) {
+                var textContainer = document.createElement("div");
+                textContainer.className = "hand_textContainer";
+                var sumText = document.createElement("div");
+                sumText.innerText = "Sum: " + this.sumText;
+                sumText.style.float = "left";
+
+                if (this.bet) {
+                    var betText = document.createElement("div");
+                    betText.innerText = "Bet: " + this.bet;
+                    betText.style.float = "right";
+                    textContainer.appendChild(betText);
+                }
+
+                textContainer.appendChild(sumText);
+
+                row.appendChild(textContainer);
+            }
         }
-        i++;
-    })
+
+        return div;
+    }
+
+    isHandOver() { }
+}
+
+class PlayerHand extends Hand {
+    constructor(bet) {
+        super();
+        this.bet = bet;
+        this.isDoubled = false;
+        this.hasStand = false;
+        this.showSum = true;
+    }
+
+    // returns a subset of [hit,stand,double,split]
+    applicableActions() {
+        var applicableActions = [];
+        if (!this.isBusted && !this.isDoubled && !this.hasStand) {
+            applicableActions.push("hit");
+            applicableActions.push("stand");
+
+            // can only double on initial hand
+            if (this.cards.length == 2) {
+                applicableActions.push("double");
+
+                // can only split w/ 2 cards of equal value
+                if (this.cards[0].value == this.cards[1].value)
+                    applicableActions.push("split");
+            }
+        }
+
+        return applicableActions;
+    }
+
+    removeCard() {
+        return this.cards.pop();
+    }
+
+    hit(card) {
+        this.takeCard(card);
+    }
+
+    double(card) {
+        this.isDoubled = true;
+        this.hit(card);
+        this.stand();
+    }
+
+    stand() {
+        this.hasStand = true;
+    }
+
+    isHandOver() {
+        if (this.sum == "bust")
+            this.isBusted = true;
+
+        return this.isDoubled || this.isBusted || this.hasStand || this.sum == 21;
+    }
+}
+
+class DealerHand extends Hand {
+    constructor() {
+        super();
+    }
+
+    flipCard() {
+        this.cards[0].isHidden = false;
+    }
+
+    isHandOver() {
+        if (this.sum == "bust")
+            this.isBusted = true;
+
+        return this.isBusted || this.sum >= 17;
+    }
+}
+
+class Round {
+    constructor(bet) {
+        this.deck = new Deck();
+        this.currentCard = 0;
+        this.dealerHand = new DealerHand();
+
+        // A player may have multiple hands, if a split occurred
+        this.playerHands = [];
+        this.playerHands.push(new PlayerHand(bet));
+        this.playerHandIndex = 0;
+
+        // Add First 4 cards
+        this.addDealerCard(true);
+        this.addPlayerCard();
+        this.addDealerCard(false);
+        this.addPlayerCard();
+
+        this.checkStatus();
+
+        this.roundDelta = 0;
+    }
+
+    nextCard() {
+        var card = this.deck.cards[this.currentCard];
+        this.currentCard++;
+        return card;
+    }
+
+    addPlayerCard() {
+        var card = this.nextCard();
+        this.playerHands[this.playerHandIndex].takeCard(card);
+    }
+
+    addDealerCard(hideCard) {
+        var card = this.nextCard();
+        this.dealerHand.takeCard(card);
+        if (hideCard) card.isHidden = true;
+
+    }
+
+    updatePage() {
+        this.updateDealerHand();
+        this.updatePlayerHands();
+
+        if (this.playerHandIndex < this.playerHands.length)
+            this.updateGameButtons();
+
+    }
+
+    updateGameButtons() {
+        console.log(this.playerHandIndex);
+        var toShow = new Set(this.playerHands[this.playerHandIndex].applicableActions());
+        var allButtons = new Set(["hit", "stand", "split", "double"]);
+        var toHide = difference(allButtons, toShow);
+
+        var gameButtonsContainer = document.getElementById("gameButtonsContainer");
+        show(gameButtonsContainer);
+
+        // show applicable
+        toShow.forEach(buttonName => {
+            show(gameButtonsContainer
+                .querySelector("." + buttonName));
+        })
+
+        // hide non-applicable
+        toHide.forEach(buttonName => {
+            hide(gameButtonsContainer
+                .querySelector("." + buttonName));
+        })
+    }
+
+    updateDealerHand() {
+        removeChildren("dealerHandContainer");
+
+        var dealerHandContainer = document.getElementById("dealerHandContainer");
+        var row = this.dealerHand.createElement();
+        var table = document.createElement("table");
+        table.className += " centerContent";
+        table.appendChild(row);
+
+        // fix spacing issue should the dealer require >1 row of cards
+        if (row.childNodes.length > 1)
+            document.getElementById("gameContainer").style.display = "grid";
+        else
+            document.getElementById("gameContainer").style.display = "";
+
+        dealerHandContainer.appendChild(table);
+    }
+
+    updatePlayerHands() {
+
+        var currRow =
+
+            removeChildren("playerHandsContainer");
+
+        var playerHandsContainer = document.getElementById("playerHandsContainer");
+        var table = document.createElement("table");
+
+        var i = 0;
+        this.playerHands.forEach(playerHand => {
+            var rows = playerHand.createElement();
+            if (i == this.playerHandIndex) {
+                rows.className += " currentHand";
+                // set buttons
+                currRow = rows;
+            }
+
+            if (playerHand.won)
+                rows.className += " win";
+            else if (playerHand.lost)
+                rows.className += " loss";
+
+            table.appendChild(rows);
+
+            var breaker = document.createElement("br");
+            table.appendChild(breaker);
+            i++;
+        });
+
+        playerHandsContainer.appendChild(table);
+
+        if (currRow) {
+            var top = Math.round(currRow.getBoundingClientRect().top);
+            document.getElementById("gameButtonsContainer").style.top = top + "px";
+        }
+
+    }
+
+    playOutDealer() {
+        var addCardInterval;
+        delayOneSecond();
+        this.dealerHand.flipCard();
+        this.dealerHand.showSum = true;
+        this.updateDealerHand();
+
+        // keep playing cards until
+        // dealer is done
+        var addCard = () => {
+
+            if (this.dealerHand.isHandOver()) {
+                clearInterval(addCardInterval);
+
+                this.endRound();
+            }
+            else {
+                this.addDealerCard(false);
+                this.updateDealerHand();
+            }
+        }
+
+        addCardInterval = setInterval(addCard, 1000);
+    }
+
+    hit() {
+        var card = this.nextCard();
+        this.playerHands[this.playerHandIndex].hit(card);
+
+        this.checkStatus();
+    }
+
+    double() {
+        var card = this.nextCard();
+        this.playerHands[this.playerHandIndex].double(card);
+
+        this.checkStatus();
+    }
+
+    stand() {
+
+        this.playerHands[this.playerHandIndex].stand();
+        this.updatePlayerHands();
+
+        this.checkStatus();
+    }
+
+    // will remove a card from the current hand,
+    // move it to a new hand, 
+    // and give a new card each
+    split() {
+        var card = this.playerHands[this.playerHandIndex].removeCard();
+        var bet = this.playerHands[this.playerHandIndex].bet;
+
+        var splitHand = new PlayerHand(bet);
+        splitHand.takeCard(card);
+        this.playerHands.push(splitHand);
+
+
+        this.playerHands[this.playerHandIndex].takeCard(this.nextCard());
+        splitHand.takeCard(this.nextCard());
+
+        this.updatePlayerHands();
+        this.checkStatus();
+
+    }
+
+    endRound() {
+        this.roundDelta = 0;
+        this.playerHands.forEach(playerHand => {
+            if (playerHand.sum == this.dealerHand.sum) return;
+
+            var lost = false;
+            var won = false;
+
+            lost |= playerHand.isBusted;
+            lost |= !this.dealerHand.isBusted && playerHand.sum < this.dealerHand.sum;
+
+            won |= !this.dealerHand.isBusted && playerHand.sum > this.dealerHand.sum;
+            won |= this.dealerHand.isBusted && !playerHand.isBusted;
+
+            // blackjack
+            if (playerHand.isDoubled)
+                playerHand.bet *= 2;
+            if (playerHand.sum == 21 && playerHand.cards.length == 2 && won)
+                playerHand.bet = Math.round(playerHand.bet * 1.5);
+
+            this.roundDelta += (lost) * (-1) * playerHand.bet;
+            this.roundDelta += (won) * playerHand.bet;
+
+            if (won)
+                playerHand.won = true;
+            else if (lost)
+                playerHand.lost = true;
+
+            this.updatePlayerHands();
+
+
+        });
+        document.game.endRound();
+    }
+
+    checkStatus() {
+        if (this.playerHands[this.playerHandIndex].isHandOver()) {
+
+            this.playerHandIndex++;
+
+            // if hand is 21, pass on to next hand
+            while (this.playerHandIndex < this.playerHands.length && this.playerHands[this.playerHandIndex].isHandOver())
+                this.playerHandIndex++;
+        }
+
+        if (this.playerHandIndex == this.playerHands.length) {
+            hide(document.getElementById("gameButtonsContainer"));
+            this.playOutDealer();
+        }
+        else {
+            this.updateGameButtons();
+        }
 
 
 
-    //update chips
-    document.getElementById("chips").innerText = "Chips: " + document.chips;
+    }
+}
+
+class Game {
+    constructor() {
+        this.currentRound = null;
+        this.pastRounds = [];
+        this.chips = 100;
+        this.bet = 1;
+    }
+
+    newRound() {
+        this.currentRound = new Round(this.bet);
+        this.updatePage();
+    }
+
+    updatePage() {
+        this.currentRound.updatePage();
+    }
+
+    changeBet(change) {
+        var newBet = this.bet + change;
+        if (newBet > 0 && newBet <= this.chips) {
+            this.bet = newBet;
+            document.getElementById("bet").innerText = "Total: " + newBet;
+        }
+    }
+    changeChips(delta) {
+        this.chips = this.chips + delta;
+        document.getElementById("chips").innerText = "Chips: " + this.chips;
+
+    }
+    endRound() {
+        this.changeChips(this.currentRound.roundDelta);
+        hide(document.getElementById("gameButtonsContainer"));
+    }
 
 }
 
-function addPlayerHand() {
-    var handsContainer = document.querySelector("#playerHandsContainer");
-    var handDiv = document.createElement("div");
-    handDiv.id = "hand_" + handsContainer.childNodes.length;
-    handDiv.className = "centerContent";
-    handDiv.style.display = "grid";
-
-    var cardsDiv = document.createElement("div");
-    cardsDiv.className = "cards";
-    cardsDiv.style.backgroundColor = "white";
-    cardsDiv.style.zIndex = "99";
-    cardsDiv.style.margin = "0 auto";
-
-    // <ul>
-    //     <li>
-    //         <span class="label">Blah blah</span>
-    //         5
-    //     </li>
-    // </ul>
-
-    //    var list = document.createElement("ul");
-    //    var listElem = document.createElement("span");
-    //    listElem.className = "sum label";
-    //    listElem.innerText = "Sum: 13";
-    //    listElem.innerHTML += "Bet:20";
-
-    //    list.appendChild(listElem);
-
-    var sumDiv = document.createElement("div");
-    sumDiv.className = "sum";
-    var sumText = document.createElement("p");
-    sumText.className = "sumText text";
-    sumText.innerText = "Sum:";
-    sumText.style.marginRight = "80px";
-    sumDiv.appendChild(sumText);
-
-    var betDiv = document.createElement("div");
-    betDiv.className = "bet";
-    var betText = document.createElement("p");
-    betText.className = "betText text";
-    betText.innerText = "Bet:1";
-    betDiv.appendChild(betText);
-
-    var textDiv = document.createElement("div");
-    textDiv.className = "textDiv";
-    textDiv.style.display = "inline-flex";
-    textDiv.appendChild(sumDiv);
-    textDiv.appendChild(betDiv);
-
-    handDiv.appendChild(cardsDiv);
-    // handDiv.appendChild(list);
-    handDiv.appendChild(textDiv);
-
-    // handDiv.appendChild(sumDiv);
-    // handDiv.appendChild(betDiv);
-
-    handsContainer.appendChild(handDiv);
-    numHands++;
-
-    return handDiv;
+function hit() {
+    document.game.currentRound.hit();
 }
 
-function split() {
-
-    playersCards.push([]);
-    currentBets.push(document.bet);
-
-    // denote that player has an additional hand to play out
-    var currentHand = document.getElementById("hand_" + currHand);
-    var createdHand = addPlayerHand();
-
-    var newHandNum = createdHand.id.split("_")[1];
-
-    var cardToMove = currentHand.querySelector(".cards").childNodes[1];
-    currentHand.querySelector(".cards").removeChild(cardToMove);
-    createdHand.querySelector(".cards").appendChild(cardToMove);
-
-    playersCards[newHandNum].push(playersCards[currHand].splice(1, 1)[0]);
-
-    addPlayerCard(currentHand.id);
-    addPlayerCard(createdHand.id);
-
-    if (playersCards[currHand].length == 2 && playersCards[currHand][0].value == playersCards[currHand][1].value) {
-        var buttons = document.querySelector('#actionContainer_inGame');
-        buttons.querySelector('.split').style.display = "";
-    }
-    else {
-        var buttons = document.querySelector('#actionContainer_inGame');
-        buttons.querySelector('.split').style.display = "none";
-    }
+function double() {
+    document.game.currentRound.double();
 }
 
 function stand() {
-    //if (hasBusted || gameOver) return;
-
-    currHand++;
-
-
-    document.getElementById("actionContainer_inGame")
-        .querySelector(".double")
-        .style.display = "";
-
-    if (currHand < playersCards.length) {
-        document.getElementById("hand_" + (currHand - 1)).querySelector(".cards").classList.remove("currentHand");
-
-        document.getElementById("hand_" + currHand).querySelector(".cards").className += " currentHand";
-
-        if (playersCards[currHand].length == 2 && playersCards[currHand][0].value == playersCards[currHand][1].value) {
-            var buttons = document.querySelector('#actionContainer_inGame');
-            buttons.querySelector('.split').style.display = "";
-        }
-        else {
-            var buttons = document.querySelector('#actionContainer_inGame');
-            buttons.querySelector('.split').style.display = "none";
-        }
-
-        var sums = addCards(playersCards[currHand]);
-
-        if (sums[0] == "bust" || sums[0] == 21) {
-            console.log("timeout")
-            hideButtons();
-            setTimeout(stand, 1000);
-        }
-        else {
-            toggleButtons(true);
-        }
-    }
-    // if round is over
-    else if (currHand == playersCards.length) {
-        hideButtons();
-        document.getElementById("actionContainer_inGame").style.display = "none";
-        document.getElementById("hand_" + (currHand - 1)).querySelector(".cards").classList.remove("currentHand");
-
-        // flip over hidden card
-        var hidden = document.getElementById("hiddenCard");
-        hidden.style.display = "none";
-        var dealersCards = document.getElementById("dealerContainer_cards");
-        dealersCards.className += "cards";
-        dealersCards.style.backgroundColor = "white";
-        dealersCards.style.zIndex = "99";
-        var firstCard = deck.cards[0];
-        dealersCards.insertBefore(firstCard.getSVG(), dealersCards.firstChild);
-
-        // show dealer sum
-        var dealerSumDiv = document.getElementById("dealerSumContainer");
-        dealerSumDiv.style.display = "";
-
-        var sums = updateSum(dealerCards, document.getElementById("dealerSumText"))
-
-        // finish out dealer cards
-        var maxSum = sums[0];
-
-        var bust = (maxSum == "bust");
-        var mustStop = maxSum >= 17;
-        dealerSum = maxSum;
-        delayOneSecond();
-
-        // dealer will continue playing until they bust
-        // or reach a value of 17
-
-        var addCardInterval;
-        var addCard = () => {
-            sums = addDealerCard(true, true);
-            maxSum = sums[0];
-            dealerSum = maxSum;
-
-            if (maxSum == "bust") {
-                bust = true;
-                dealerSum = -1;
-            }
-            else {
-                if (maxSum >= 17) mustStop = true;
-            }
-
-            if (bust || mustStop) {
-                clearInterval(addCardInterval);
-                endGame();
-            }
-        }
-
-        // start autoplay for dealer, playing one card / sec
-        // only initiate if dealer starts below 17
-        if (!bust && !mustStop)
-            addCardInterval = setInterval(addCard, 1000);
-        else
-            endGame();
-    }
+    document.game.currentRound.stand();
 }
 
-function updateSum(cards, sumText, bet) {
-    var sums = addCards(cards);
-    var str = "Sum: " + sums[0];
-
-    for (var i = 1; i < sums.length; i++)
-        str += " or " + sums[i];
-
-    sumText.innerText = str;
-
-    return sums;
+function split() {
+    document.game.currentRound.split();
 }
 
-function addDealerCard(showCard, updateSums) {
-    var img, card;
-    var dealersCards = document.getElementById("dealerContainer_cards")
-    
-    card = deck.cards[currentCard];
-    if (!showCard) {
-        img = document.createElement('img');
-        img.src = "./svg-cards/Card_back.svg";
-        img.width = "125";
-        img.id = "hiddenCard";
-    }
-    else {
-        img = card.getSVG();
-    }
-    
-    dealersCards.appendChild(img);
-    dealerCards.push(card);
-
-    var sums;
-    if (updateSums)
-        sums = updateSum(dealerCards, document.getElementById("dealerSumText"))
-
-    currentCard++;
-
-    return sums;
+function changeBet(inc) {
+    document.game.changeBet(inc);
 }
 
-function updateBet(newBet) {
-    document.bet = newBet;
-    document.getElementById("bet").innerText = "Bet: " + document.bet;
-}
-
-function addPlayerCard(handStr) {
-    var handNum = handStr.split("_")[1];
-
-    var playersCardsDiv = document.getElementById(handStr).querySelector(".cards");
-
-    // add card to window
-    var card = deck.cards[currentCard];
-    playersCardsDiv.appendChild(card.getSVG());
-
-    playersCards[handNum].push(card);
-
-    // update sum
-    var sums = updateSum(playersCards[handNum],
-        document.getElementById(handStr)
-            .querySelector(".textDiv")
-            .querySelector(".sum")
-            .querySelector(".sumText"),
-        currentBets[handNum]);
-    sum = sums[0];
-
-    // if busted, update variable
-    if (sums[0] == "bust" || sums[0] == 21 && handNum == currHand) {
-        console.log("timeout")
-        hideButtons();
-        setTimeout(stand, 1000);
-    }
-
-    // increment used card
-    currentCard++;
+function newGame() {
+    document.game.newRound();
 }
