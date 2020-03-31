@@ -42,7 +42,7 @@
     }
 
     .mobile-text {
-        font-size: xx-large;
+        font-size: large;
     }
 
     .currentHand {
@@ -197,6 +197,7 @@
     <script>
 
         if (isMobile.any()) {
+            console.log("MOBILE")
             document.height = " mobile-height";
             document.text = " mobile-text";
         }
