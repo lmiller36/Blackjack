@@ -583,7 +583,7 @@ class Round {
             this.playOutDealer();
         }
         else {
-            this.updateGameButtons();
+            this.updatePage();
         }
 
 
