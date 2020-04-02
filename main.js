@@ -101,9 +101,9 @@ class Deck {
         }
 
         this.cards = shuffle(this.cards);
-        this.cards.splice(0, 1, new Card("spades", "ace"))
+        // this.cards.splice(0, 1, new Card("spades", "ace"))
         // this.cards.splice(1, 1, new Card("clubs", "10"))
-        this.cards.splice(2, 1, new Card("spades", "10"))
+        // this.cards.splice(2, 1, new Card("spades", "10"))
         // this.cards.splice(3, 1, new Card("clubs", "7"))
         // this.cards.splice(4, 1, new Card("hearts", "10"))
         // this.cards.splice(5, 1, new Card("hearts", "10"))`
