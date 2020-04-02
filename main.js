@@ -578,13 +578,17 @@ class Round {
                 this.playerHandIndex++;
         }
 
+        if (this.playerHandIndex <= this.playerHands.length) {
+            this.updatePage();
+        }
+
         if (this.playerHandIndex == this.playerHands.length) {
             hide(document.getElementById("gameButtonsContainer"));
             this.playOutDealer();
         }
-        else {
-            this.updatePage();
-        }
+        // else {
+        //     this.updatePage();
+        // }
 
 
 
