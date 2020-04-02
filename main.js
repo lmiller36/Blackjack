@@ -101,9 +101,9 @@ class Deck {
         }
 
         this.cards = shuffle(this.cards);
-        // this.cards.splice(0, 1, new Card("spades", "10"))
+        this.cards.splice(0, 1, new Card("spades", "ace"))
         // this.cards.splice(1, 1, new Card("clubs", "10"))
-        // this.cards.splice(2, 1, new Card("spades", "7"))
+        this.cards.splice(2, 1, new Card("spades", "10"))
         // this.cards.splice(3, 1, new Card("clubs", "7"))
         // this.cards.splice(4, 1, new Card("hearts", "10"))
         // this.cards.splice(5, 1, new Card("hearts", "10"))`
@@ -337,6 +337,14 @@ class DealerHand extends Hand {
 
         return this.isBusted || this.sum >= 17;
     }
+
+    aceShowing() {
+        return this.cards[1].faceValue == "ace";
+    }
+
+    hasBlackjackWithAceShowing(){
+        return this.sum == 21 && this.aceShowing();
+    }
 }
 
 class Round {
@@ -430,9 +438,7 @@ class Round {
 
     updatePlayerHands() {
 
-        var currRow =
-
-            removeChildren("playerHandsContainer");
+        var currRow = removeChildren("playerHandsContainer");
 
         var playerHandsContainer = document.getElementById("playerHandsContainer");
         var table = document.createElement("table");
@@ -571,12 +577,12 @@ class Round {
     }
 
     checkStatus() {
-        if (this.playerHands[this.playerHandIndex].isHandOver()) {
+        if (this.playerHands[this.playerHandIndex].isHandOver() || this.dealerHand.hasBlackjackWithAceShowing()) {
 
             this.playerHandIndex++;
 
             // if hand is 21, pass on to next hand
-            while (this.playerHandIndex < this.playerHands.length && this.playerHands[this.playerHandIndex].isHandOver())
+            while (this.playerHandIndex < this.playerHands.length && (this.playerHands[this.playerHandIndex].isHandOver() || this.dealerHand.hasBlackjackWithAceShowing()))
                 this.playerHandIndex++;
         }
 
