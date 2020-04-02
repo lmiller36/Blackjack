@@ -3,8 +3,7 @@
 
 <head>
     <title>Lorne's Blackjack Odds</title>
-    <meta name="viewport" content="width=device-width, user-scalable=no">
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0"> 
 </head>
 
 <style>
@@ -135,7 +134,7 @@
         position: absolute;
         width: 100%;
         height: 80%;
-        top: 24%;
+        top: 27%;
     }
 
     .hand {
@@ -159,7 +158,7 @@
 </style>
 
 
-<body class="text" onload="">
+<body class="text" onload="" style="touch-action: manipulation;">
     <div class="backgroundImage">
     </div>
     <div class="mobileContainer">
@@ -174,7 +173,7 @@
                 </div>
             </div>
         </div>
-        <div class="gameButtonsContainer" id="gameButtonsContainer">
+        <div class="gameButtonsContainer" id="gameButtonsContainer" tabindex="-1">
             <div class="hit"> <button class="text gameButton" onclick="hit()">hit</button></div>
             <div class="stand"> <button class="text gameButton" onclick="stand()">stand</button></div>
             <div class="double"> <button class="text gameButton" onclick="double()">double</button></div>

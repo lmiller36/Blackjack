@@ -101,11 +101,12 @@ class Deck {
         }
 
         this.cards = shuffle(this.cards);
-
-        // this.cards.splice(1, 1, new Card("spades", "ace"))
-        // this.cards.splice(3, 1, new Card("clubs", "10"))
-        // this.cards.splice(4, 1, new Card("hearts", "ace"))
-        // this.cards.splice(5, 1, new Card("hearts", "ace"))
+        // this.cards.splice(0, 1, new Card("spades", "10"))
+        // this.cards.splice(1, 1, new Card("clubs", "10"))
+        // this.cards.splice(2, 1, new Card("spades", "7"))
+        // this.cards.splice(3, 1, new Card("clubs", "7"))
+        // this.cards.splice(4, 1, new Card("hearts", "10"))
+        // this.cards.splice(5, 1, new Card("hearts", "10"))`
         // this.cards.splice(6, 1, new Card("hearts", "ace"))
     }
 }
@@ -148,7 +149,7 @@ class Card {
             img.src = "./svg-cards/" + this.faceValue + "_of_" + this.suit + ".svg";
         }
 
-        img.className = "card "+document.height;
+        img.className = "card " + document.height;
         return img;
     }
 }
@@ -340,6 +341,7 @@ class DealerHand extends Hand {
 
 class Round {
     constructor(bet) {
+
         this.deck = new Deck();
         this.currentCard = 0;
         this.dealerHand = new DealerHand();
@@ -388,7 +390,6 @@ class Round {
     }
 
     updateGameButtons() {
-        console.log(this.playerHandIndex);
         var toShow = new Set(this.playerHands[this.playerHandIndex].applicableActions());
         var allButtons = new Set(["hit", "stand", "split", "double"]);
         var toHide = difference(allButtons, toShow);
@@ -536,7 +537,6 @@ class Round {
     endRound() {
         this.roundDelta = 0;
         this.playerHands.forEach(playerHand => {
-            if (playerHand.sum == this.dealerHand.sum) return;
 
             var lost = false;
             var won = false;
@@ -544,7 +544,7 @@ class Round {
             lost |= playerHand.isBusted;
             lost |= !this.dealerHand.isBusted && playerHand.sum < this.dealerHand.sum;
 
-            won |= !this.dealerHand.isBusted && playerHand.sum > this.dealerHand.sum;
+            won |= !this.dealerHand.isBusted && playerHand.sum > this.dealerHand.sum && !playerHand.isBusted;
             won |= this.dealerHand.isBusted && !playerHand.isBusted;
 
             // blackjack
@@ -555,6 +555,8 @@ class Round {
 
             this.roundDelta += (lost) * (-1) * playerHand.bet;
             this.roundDelta += (won) * playerHand.bet;
+
+            console.log(won + " " + lost);
 
             if (won)
                 playerHand.won = true;
@@ -578,9 +580,9 @@ class Round {
                 this.playerHandIndex++;
         }
 
-        if (this.playerHandIndex <= this.playerHands.length) {
-            this.updatePage();
-        }
+        // if (this.playerHandIndex <= this.playerHands.length) {
+        this.updatePage();
+        // }
 
         if (this.playerHandIndex == this.playerHands.length) {
             hide(document.getElementById("gameButtonsContainer"));
@@ -613,6 +615,7 @@ class Game {
     }
 
     changeBet(change) {
+        document.getElementById("gameButtonsContainer").blur();
         var newBet = this.bet + change;
         if (newBet > 0 && newBet <= this.chips) {
             this.bet = newBet;
@@ -627,6 +630,7 @@ class Game {
     endRound() {
         this.changeChips(this.currentRound.roundDelta);
         hide(document.getElementById("gameButtonsContainer"));
+        show(document.getElementById("betButtons"));
     }
 
 }
@@ -652,5 +656,6 @@ function changeBet(inc) {
 }
 
 function newGame() {
+    hide(document.getElementById("betButtons"));
     document.game.newRound();
 }
