@@ -178,7 +178,6 @@
             <div class="stand"> <button class="text gameButton" onclick="stand()">stand</button></div>
             <div class="double"> <button class="text gameButton" onclick="double()">double</button></div>
             <div class="split"> <button class="text gameButton" onclick="split()">split</button></div>
-
         </div>
     </div>
     <div class="gameContainer" id="gameContainer">
@@ -221,6 +220,32 @@
         }
 
         document.game = new Game();
+
+        document.addEventListener('keyup', (e) => {
+            var key = e.key
+
+            // Allow in game key bindings
+            if(document.game.inGame) {
+                if(key == 'h')
+                    hit();
+                else if (key == 's')
+                    stand();
+                else if (key == 'd')
+                    double();
+                    
+                return;
+            }
+
+            // If not in game, allow bet increment changes & new game on enter
+            if (key == '+')
+                changeBet(1);
+            else if (key == '-')
+                changeBet(-1);
+            
+            else if (key == 'Enter')
+                newGame();
+            
+        });
     </script>
 </body>
 

@@ -609,9 +609,11 @@ class Game {
         this.pastRounds = [];
         this.chips = 100;
         this.bet = 1;
+        this.inGame = false;
     }
 
     newRound() {
+        this.inGame = true;
         this.currentRound = new Round(this.bet);
         this.updatePage();
     }
@@ -637,6 +639,7 @@ class Game {
         this.changeChips(this.currentRound.roundDelta);
         hide(document.getElementById("gameButtonsContainer"));
         show(document.getElementById("betButtons"));
+        this.inGame = false;
     }
 
 }
